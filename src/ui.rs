@@ -21,12 +21,9 @@ impl Widget for &App {
             .border_type(BorderType::Rounded);
 
         let text = format!(
-            "This is a tui template.\n\
-                Press `Esc`, `Ctrl-C` or `q` to stop running.\n\
-                Press left and right to increment and decrement the counter respectively.\n\
-                Counter: {}\n
-                test text: {}",
-            self.counter, self.test_text
+            "song title: {}\n\
+                artist: {}",
+            self.title, self.artist
         );
 
         let paragraph = Paragraph::new(text)
