@@ -37,6 +37,12 @@ pub enum AppEvent {
     Quit,
 
     Reload,
+
+    PlayPause,
+
+    Previous,
+
+    Next,
 }
 
 /// Terminal event handler.

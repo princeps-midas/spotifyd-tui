@@ -57,6 +57,9 @@ impl App {
             Event::App(app_event) => match app_event {
                 AppEvent::Quit => self.quit(),
                 AppEvent::Reload => self.reload(),
+                AppEvent::PlayPause => self.playpause(),
+                AppEvent::Previous => self.previous(),
+                AppEvent::Next => self.next(),
             },
         }
         Ok(())
@@ -70,6 +73,9 @@ impl App {
                 self.events.send(AppEvent::Quit)
             }
             KeyCode::Char('r' | 'R') => self.events.send(AppEvent::Reload),
+            KeyCode::Char(' ') => self.events.send(AppEvent::PlayPause),
+            KeyCode::Right => self.events.send(AppEvent::Previous),
+            KeyCode::Left => self.events.send(AppEvent::Next),
             // Other handlers you could add here.
             _ => {}
         }
@@ -91,7 +97,7 @@ impl App {
     }
 
     pub fn reload(&mut self) {
-        let _ = rash!("killall spotifyd && spotifyd && systemctl suspend");
+        let _ = rash!("killall spotifyd && spotifyd");
     }
 
     pub fn get_title(&mut self) {
@@ -112,5 +118,17 @@ impl App {
         } else {
             self.artist = "none".to_string();
         }
+    }
+
+    pub fn playpause(&mut self) {
+        let _ = rash!("playerctl --player=spotifyd play-pause");
+    }
+
+    pub fn previous(&mut self) {
+        let _ = rash!("playerctl --player=spotifyd previous");
+    }
+
+    pub fn next(&mut self) {
+        let _ = rash!("playerctl --player=spotifyd next");
     }
 }
