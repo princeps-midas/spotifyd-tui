@@ -60,6 +60,8 @@ impl App {
                 AppEvent::PlayPause => self.playpause(),
                 AppEvent::Previous => self.previous(),
                 AppEvent::Next => self.next(),
+                AppEvent::VolUp => self.vol_up(),
+                AppEvent::VolDown => self.vol_down(),
             },
         }
         Ok(())
@@ -74,8 +76,10 @@ impl App {
             }
             KeyCode::Char('r' | 'R') => self.events.send(AppEvent::Reload),
             KeyCode::Char(' ') => self.events.send(AppEvent::PlayPause),
-            KeyCode::Right => self.events.send(AppEvent::Previous),
-            KeyCode::Left => self.events.send(AppEvent::Next),
+            KeyCode::Left => self.events.send(AppEvent::Previous),
+            KeyCode::Right => self.events.send(AppEvent::Next),
+            KeyCode::Up => self.events.send(AppEvent::VolUp),
+            KeyCode::Down => self.events.send(AppEvent::VolDown),
             // Other handlers you could add here.
             _ => {}
         }
@@ -96,8 +100,9 @@ impl App {
         self.running = false;
     }
 
+    // there might be a better way to do this
     pub fn reload(&mut self) {
-        let _ = rash!("killall spotifyd && spotifyd");
+        let _ = rash!("killall spotifyd && hyprctl dispatch spotifyd");
     }
 
     pub fn get_title(&mut self) {
@@ -130,5 +135,13 @@ impl App {
 
     pub fn next(&mut self) {
         let _ = rash!("playerctl --player=spotifyd next");
+    }
+
+    pub fn vol_up(&mut self) {
+        let _ = rash!("playerctl --player=spotifyd volume 0.05+");
+    }
+
+    pub fn vol_down(&mut self) {
+        let _ = rash!("playerctl --player=spotifyd volume 0.05-");
     }
 }

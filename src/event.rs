@@ -43,6 +43,10 @@ pub enum AppEvent {
     Previous,
 
     Next,
+
+    VolUp,
+
+    VolDown,
 }
 
 /// Terminal event handler.
