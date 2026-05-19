@@ -25,15 +25,15 @@ impl Widget for &App {
 
         let text = format!(
             "\n\
-                song title: {}\n\
+                title: {}\n\
                 artist: {}\n\
-                volume: {}",
-            self.title, self.artist, self.volume
+                {}: {}",
+            self.title, self.artist, self.speaker, self.volume
         );
 
         let paragraph = Paragraph::new(text)
             .block(block)
-            .fg(Color::Cyan)
+            .fg(Color::Magenta)
             .bg(Color::Black)
             .centered();
 

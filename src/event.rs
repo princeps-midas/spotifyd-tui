@@ -47,6 +47,8 @@ pub enum AppEvent {
     VolUp,
 
     VolDown,
+
+    ToggleMute,
 }
 
 /// Terminal event handler.

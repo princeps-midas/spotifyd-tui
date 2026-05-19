@@ -16,7 +16,11 @@ pub struct App {
     // song artist
     pub artist: String,
     // current volume
-    pub volume: i8,
+    pub volume: u8,
+    // whether audio is currently muted
+    pub mute: bool,
+    // ui speaker symbol
+    pub speaker: String,
 }
 
 impl Default for App {
@@ -27,6 +31,8 @@ impl Default for App {
             title: String::new(),
             artist: String::new(),
             volume: 0,
+            mute: false,
+            speaker: String::new(),
         }
     }
 }
@@ -65,6 +71,7 @@ impl App {
                 AppEvent::Next => self.next(),
                 AppEvent::VolUp => self.vol_up(),
                 AppEvent::VolDown => self.vol_down(),
+                AppEvent::ToggleMute => self.toggle_mute(),
             },
         }
         Ok(())
@@ -83,6 +90,7 @@ impl App {
             KeyCode::Right => self.events.send(AppEvent::Next),
             KeyCode::Up => self.events.send(AppEvent::VolUp),
             KeyCode::Down => self.events.send(AppEvent::VolDown),
+            KeyCode::Char('m' | 'M') => self.events.send(AppEvent::ToggleMute),
             // Other handlers you could add here.
             _ => {}
         }
@@ -97,9 +105,10 @@ impl App {
         self.get_title();
         self.get_artist();
         self.get_volume();
+        self.get_speaker();
     }
 
-    /// Set running to false to quit the application.
+    // Set running to false to quit the application.
     pub fn quit(&mut self) {
         self.running = false;
     }
@@ -132,13 +141,28 @@ impl App {
     }
 
     pub fn get_volume(&mut self) {
+        if self.mute == true {
+            return;
+        }
         let (retval, mut stdout, _) =
             rash!("playerctl --player=spotifyd volume --format {{volume}}").unwrap();
         if retval == 0 {
             stdout.pop();
-            self.volume = (stdout.to_string().parse::<f32>().unwrap() * 100 as f32).round() as i8;
+            self.volume = (stdout.to_string().parse::<f32>().unwrap() * 100 as f32).round() as u8;
         } else {
             self.volume = 0;
+        }
+    }
+
+    pub fn get_speaker(&mut self) {
+        if self.mute {
+            self.speaker = "󰖁".to_string();
+        } else if self.volume >= 70 {
+            self.speaker = "".to_string();
+        } else if self.volume >= 30 {
+            self.speaker = "".to_string();
+        } else {
+            self.speaker = "".to_string();
         }
     }
 
@@ -160,5 +184,16 @@ impl App {
 
     pub fn vol_down(&mut self) {
         let _ = rash!("playerctl --player=spotifyd volume 0.05-");
+    }
+
+    pub fn toggle_mute(&mut self) {
+        if self.mute == false {
+            self.mute = true;
+            let _ = rash!("playerctl --player=spotifyd volume 0");
+        } else {
+            self.mute = false;
+            let command = format!("playerctl --player=spotifyd volume 0.{}", self.volume);
+            let _ = rash!(command);
+        }
     }
 }
