@@ -1,8 +1,9 @@
 use ratatui::{
     buffer::Buffer,
     layout::{Alignment, Rect},
-    style::{Color, Stylize},
-    widgets::{Block, BorderType, Paragraph, Widget},
+    prelude::*,
+    style::{Color, Style, Stylize},
+    widgets::{Block, BorderType, Gauge, Paragraph, Widget},
 };
 // use ratatui_image::{StatefulImage, picker::Picker, protocol::StatefulProtocol};
 
@@ -19,9 +20,14 @@ impl Widget for &App {
         let block = Block::bordered()
             .title("spotifyd-tui")
             .title_alignment(Alignment::Center)
-            .border_type(BorderType::Rounded);
+            .border_type(BorderType::Rounded)
+            .fg(Color::Magenta)
+            .bg(Color::Black);
 
-        // let image = StatefulImage::default();
+        let layout = Layout::default()
+            .direction(Direction::Vertical)
+            .constraints(vec![Constraint::Min(5), Constraint::Max(1)])
+            .split(block.inner(area));
 
         let text = format!(
             "\n\
@@ -32,11 +38,19 @@ impl Widget for &App {
         );
 
         let paragraph = Paragraph::new(text)
-            .block(block)
+            // .block(block)
             .fg(Color::Magenta)
             .bg(Color::Black)
             .centered();
 
-        paragraph.render(area, buf);
+        let progress = Gauge::default()
+            .gauge_style(Style::new().magenta().on_black())
+            .use_unicode(true)
+            .label("")
+            .ratio(self.progress);
+
+        block.render(area, buf);
+        paragraph.render(layout[0], buf);
+        progress.render(layout[1], buf);
     }
 }

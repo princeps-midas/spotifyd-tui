@@ -21,6 +21,8 @@ pub struct App {
     pub mute: bool,
     // ui speaker symbol
     pub speaker: String,
+    // progress of the current song
+    pub progress: f64,
 }
 
 impl Default for App {
@@ -33,6 +35,7 @@ impl Default for App {
             volume: 0,
             mute: false,
             speaker: String::new(),
+            progress: 0.,
         }
     }
 }
@@ -106,6 +109,7 @@ impl App {
         self.get_artist();
         self.get_volume();
         self.get_speaker();
+        self.get_progress();
     }
 
     // Set running to false to quit the application.
@@ -163,6 +167,21 @@ impl App {
             self.speaker = "".to_string();
         } else {
             self.speaker = "".to_string();
+        }
+    }
+
+    pub fn get_progress(&mut self) {
+        let (_, mut length, _) =
+            rash!("playerctl --player=spotifyd metadata mpris:length").unwrap();
+        let (retval, mut position, _) = rash!("playerctl --player=spotifyd position").unwrap();
+        if retval == 0 {
+            length.pop();
+            position.pop();
+            self.progress = (position.parse::<f64>().unwrap() * 1000000 as f64)
+                / (length.parse::<f64>().unwrap());
+            // println!("{}", self.progress)
+        } else {
+            self.progress = 0.;
         }
     }
 
