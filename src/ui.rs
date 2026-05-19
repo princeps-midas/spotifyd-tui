@@ -4,6 +4,7 @@ use ratatui::{
     style::{Color, Stylize},
     widgets::{Block, BorderType, Paragraph, Widget},
 };
+// use ratatui_image::{StatefulImage, picker::Picker, protocol::StatefulProtocol};
 
 use crate::app::App;
 
@@ -16,14 +17,18 @@ impl Widget for &App {
     // - https://github.com/ratatui/ratatui/tree/master/examples
     fn render(self, area: Rect, buf: &mut Buffer) {
         let block = Block::bordered()
-            .title("event_driven")
+            .title("spotifyd-tui")
             .title_alignment(Alignment::Center)
             .border_type(BorderType::Rounded);
 
+        // let image = StatefulImage::default();
+
         let text = format!(
-            "song title: {}\n\
-                artist: {}",
-            self.title, self.artist
+            "\n\
+                song title: {}\n\
+                artist: {}\n\
+                volume: {}",
+            self.title, self.artist, self.volume
         );
 
         let paragraph = Paragraph::new(text)

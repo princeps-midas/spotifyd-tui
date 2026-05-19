@@ -15,6 +15,8 @@ pub struct App {
     pub title: String,
     // song artist
     pub artist: String,
+    // current volume
+    pub volume: i8,
 }
 
 impl Default for App {
@@ -24,6 +26,7 @@ impl Default for App {
             events: EventHandler::new(),
             title: String::new(),
             artist: String::new(),
+            volume: 0,
         }
     }
 }
@@ -93,6 +96,7 @@ impl App {
     pub fn tick(&mut self) {
         self.get_title();
         self.get_artist();
+        self.get_volume();
     }
 
     /// Set running to false to quit the application.
@@ -106,9 +110,10 @@ impl App {
     }
 
     pub fn get_title(&mut self) {
-        let (retval, stdout, _) =
+        let (retval, mut stdout, _) =
             rash!("playerctl --player=spotifyd metadata --format '{{title}}'").unwrap();
         if retval == 0 {
+            stdout.pop();
             self.title = stdout;
         } else {
             self.title = "none".to_string();
@@ -116,12 +121,24 @@ impl App {
     }
 
     pub fn get_artist(&mut self) {
-        let (retval, stdout, _) =
+        let (retval, mut stdout, _) =
             rash!("playerctl --player=spotifyd metadata --format '{{artist}}'").unwrap();
         if retval == 0 {
+            stdout.pop();
             self.artist = stdout;
         } else {
             self.artist = "none".to_string();
+        }
+    }
+
+    pub fn get_volume(&mut self) {
+        let (retval, mut stdout, _) =
+            rash!("playerctl --player=spotifyd volume --format {{volume}}").unwrap();
+        if retval == 0 {
+            stdout.pop();
+            self.volume = (stdout.to_string().parse::<f32>().unwrap() * 100 as f32).round() as i8;
+        } else {
+            self.volume = 0;
         }
     }
 
