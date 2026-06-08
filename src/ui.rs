@@ -29,7 +29,7 @@ impl Widget for &App {
             .constraints(vec![
                 Constraint::Percentage(80),
                 Constraint::Min(5),
-                Constraint::Min(1),
+                Constraint::Length(1),
             ])
             .split(block.inner(area));
 
