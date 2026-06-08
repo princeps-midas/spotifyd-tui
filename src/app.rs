@@ -1,11 +1,13 @@
 use crate::event::{AppEvent, Event, EventHandler};
 
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
-use ratatui::DefaultTerminal;
+use image::ImageReader;
+use ratatui::{DefaultTerminal, layout::Rect};
+// use ratatui_image::{picker::Picker, protocol::StatefulProtocol};
 use rsbash::rash;
 
 /// Application.
-#[derive(Debug)]
+// #[derive(Debug)]
 pub struct App {
     /// Is the application running?
     pub running: bool,
@@ -23,6 +25,12 @@ pub struct App {
     pub speaker: String,
     // progress of the current song
     pub progress: f64,
+    // cover art of the song
+    // pub cover: StatefulProtocol,
+    //area the cover may take up
+    pub cover_area: Rect,
+    // whether the song changed since last tick
+    pub new_song: bool,
 }
 
 impl Default for App {
@@ -36,6 +44,9 @@ impl Default for App {
             mute: false,
             speaker: String::new(),
             progress: 0.,
+            // cover: None,
+            cover_area: Rect::new(0, 0, 0, 0),
+            new_song: true,
         }
     }
 }
@@ -110,6 +121,9 @@ impl App {
         self.get_volume();
         self.get_speaker();
         self.get_progress();
+        // if self.new_song {
+        // self.get_cover();
+        // }
     }
 
     // Set running to false to quit the application.
@@ -123,11 +137,15 @@ impl App {
     }
 
     pub fn get_title(&mut self) {
+        self.new_song = false;
         let (retval, mut stdout, _) =
             rash!("playerctl --player=spotifyd metadata --format '{{title}}'").unwrap();
         if retval == 0 {
             stdout.pop();
-            self.title = stdout;
+            if self.title != stdout {
+                self.title = stdout;
+                self.new_song = true;
+            }
         } else {
             self.title = "none".to_string();
         }
@@ -183,6 +201,31 @@ impl App {
         } else {
             self.progress = 0.;
         }
+    }
+
+    pub fn get_cover(&mut self) -> Result<(), Box<dyn std::error::Error>> {
+        // let (retval, mut stdout, _) =
+        //     rash!("playerctl --player=spotifyd metadata mpris:url").unwrap();
+
+        // let picker = Picker::from_query_stdio()?;
+        // let font_size = picker.font_size();
+
+        // let img = ImageReader::open("./assets/spotifyd.png")?.decode()?;
+
+        // let rect = Rect::new(
+        //     0,
+        //     0,
+        //     img.width().div_ceil(font_size.0 as u32) as u16,
+        //     img.height().div_ceil(font_size.1 as u32) as u16,
+        // );
+
+        // Create the Protocol once, or in other words, transform the image data to Sixels, Kitty
+        // data, iTerm2 base64 PNG data, or some kind of ASCII-art.
+        // let image = picker.new_resize_protocol(img);
+
+        // self.cover = image;
+
+        Ok(())
     }
 
     pub fn playpause(&mut self) {

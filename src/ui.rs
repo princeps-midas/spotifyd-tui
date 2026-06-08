@@ -5,7 +5,7 @@ use ratatui::{
     style::{Color, Style, Stylize},
     widgets::{Block, BorderType, Gauge, Paragraph, Widget},
 };
-// use ratatui_image::{StatefulImage, picker::Picker, protocol::StatefulProtocol};
+// use ratatui_image::{Image, StatefulImage};
 
 use crate::app::App;
 
@@ -21,12 +21,16 @@ impl Widget for &App {
             .title("spotifyd-tui")
             .title_alignment(Alignment::Center)
             .border_type(BorderType::Rounded)
-            .fg(Color::Magenta)
-            .bg(Color::Black);
+            .fg(Color::Magenta);
+        // .bg(Color::Black);
 
         let layout = Layout::default()
             .direction(Direction::Vertical)
-            .constraints(vec![Constraint::Min(5), Constraint::Max(1)])
+            .constraints(vec![
+                Constraint::Percentage(80),
+                Constraint::Min(5),
+                Constraint::Min(1),
+            ])
             .split(block.inner(area));
 
         let text = format!(
@@ -40,17 +44,21 @@ impl Widget for &App {
         let paragraph = Paragraph::new(text)
             // .block(block)
             .fg(Color::Magenta)
-            .bg(Color::Black)
+            // .bg(Color::Black)
             .centered();
 
         let progress = Gauge::default()
-            .gauge_style(Style::new().magenta().on_black())
+            .gauge_style(Style::new().magenta())
             .use_unicode(true)
             .label("")
             .ratio(self.progress);
 
         block.render(area, buf);
-        paragraph.render(layout[0], buf);
-        progress.render(layout[1], buf);
+        // match &self.cover {
+        //     None => (),
+        //     Some(cover) => StatefulImage::new().render(layout[0], buf, &mut cover),
+        // }
+        paragraph.render(layout[1], buf);
+        progress.render(layout[2], buf);
     }
 }
