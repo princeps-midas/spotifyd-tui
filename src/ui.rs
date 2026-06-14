@@ -21,7 +21,7 @@ impl Widget for &App {
             .title("spotifyd-tui")
             .title_alignment(Alignment::Center)
             .border_type(BorderType::Rounded)
-            .fg(Color::Magenta);
+            .fg(Color::LightRed);
         // .bg(Color::Black);
 
         let layout = Layout::default()
@@ -43,7 +43,7 @@ impl Widget for &App {
 
         let paragraph = Paragraph::new(text)
             // .block(block)
-            .fg(Color::Magenta)
+            .fg(Color::LightRed)
             // .bg(Color::Black)
             .centered();
 
