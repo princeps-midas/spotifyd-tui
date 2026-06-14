@@ -48,7 +48,7 @@ impl Widget for &App {
             .centered();
 
         let progress = Gauge::default()
-            .gauge_style(Style::new().magenta())
+            .gauge_style(Style::new().light_red())
             .use_unicode(true)
             .label("")
             .ratio(self.progress);
