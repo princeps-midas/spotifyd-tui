@@ -1,11 +1,6 @@
-use crate::{
-    event::{AppEvent, Event, EventHandler},
-    main,
-};
-use std::cmp;
-
+use crate::event::{AppEvent, Event, EventHandler};
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
-use image::ImageReader;
+// use image::ImageReader;
 use ratatui::{DefaultTerminal, layout::Rect};
 // use ratatui_image::{picker::Picker, protocol::StatefulProtocol};
 use rsbash::rash;
@@ -199,9 +194,9 @@ impl App {
         if retval == 0 {
             length.pop();
             position.pop();
-            self.progress = (position.parse::<f64>().unwrap() * 1000000 as f64)
-                / (length.parse::<f64>().unwrap());
-            self.progress = cmp::min(self.progress, 1);
+            self.progress = ((position.parse::<f64>().unwrap() * 1000000 as f64)
+                / (length.parse::<f64>().unwrap()))
+            .min(1.0);
             // println!("{}", self.progress)
         } else {
             self.progress = 0.;
