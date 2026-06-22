@@ -1,4 +1,8 @@
-use crate::event::{AppEvent, Event, EventHandler};
+use crate::{
+    event::{AppEvent, Event, EventHandler},
+    main,
+};
+use std::cmp;
 
 use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use image::ImageReader;
@@ -197,6 +201,7 @@ impl App {
             position.pop();
             self.progress = (position.parse::<f64>().unwrap() * 1000000 as f64)
                 / (length.parse::<f64>().unwrap());
+            self.progress = cmp::min(self.progress, 1);
             // println!("{}", self.progress)
         } else {
             self.progress = 0.;
